@@ -7,7 +7,6 @@ public static class LuaExtensions
         string prefix = string.IsNullOrEmpty(saveTo) ? "" : saveTo + " = ";
         chunk = chunk.Replace("\"", "\\\"")
                      .Replace(System.Environment.NewLine, "");
-        UnityEngine.Debug.Log("here is what we are going to eval:\n" + prefix + "fennel.eval(\"" + chunk + "\")");
         lua.DoString(prefix + "fennel.eval(\"" + chunk + "\")");
     }
 }
