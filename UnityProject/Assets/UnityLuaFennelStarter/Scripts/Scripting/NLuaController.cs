@@ -1,6 +1,5 @@
 using UnityEngine;
 using NLua;
-using System.IO;
 
 public enum ScriptingLanguage
 {
@@ -14,17 +13,22 @@ public class NLuaController : MonoBehaviour
     Lua lua = new Lua();
     Bridge bridge;
 
+    public TextAsset luaSearcher;
+    public TextAsset fennelSearcher;
     public TextAsset fennelLibrary;
+    public TextAsset[] luaScripts;
     public TextAsset[] fennelScripts;
 
     public ScriptingLanguage defaultLanguage;
 
+    #region Unity Messages
     void Awake()
     {
         bridge = new Bridge(lua);
-        EnsureFilesExistInPath();
         ConnectLuaToCLR();
-        SetupPathsAndScripts();
+        LinkModulesToLua();
+        LoadLua();
+        LoadFennel();
         SetupDefaultScriptingLanguage();
     }
 
@@ -37,46 +41,65 @@ public class NLuaController : MonoBehaviour
     {
         ConsoleEvents.Eval.RemoveListener(Eval);
     }
+    #endregion
 
-    void EnsureFilesExistInPath()
-    {
-        if (Directory.Exists(Application.persistentDataPath + "/scripting/lib")) Directory.Delete(Application.persistentDataPath + "/scripting/lib", true);
-        if (!Directory.Exists(Application.persistentDataPath + "/scripting")) Directory.CreateDirectory(Application.persistentDataPath + "/scripting/lib");
-        Directory.CreateDirectory(Application.persistentDataPath + "/scripting/lib");
-
-        // fennel.lua Library
-        File.WriteAllText(Application.persistentDataPath + "/scripting/lib/" + fennelLibrary.name + ".lua", fennelLibrary.text);
-
-        // .fnl scripts
-        for (int i = 0; i < fennelScripts.Length; i++)
-        {
-            File.WriteAllText(Application.persistentDataPath + "/scripting/lib/" + fennelScripts[i].name + ".fnl", fennelScripts[i].text);
-        }
-    }
-
+    #region Lua and Fennel Setup
     void ConnectLuaToCLR(bool preventImport = true)
     {
         lua.LoadCLRPackage();
         if (preventImport) lua.DoString("import = function () end");
     }
 
-    void SetupPathsAndScripts()
+    void LinkModulesToLua()
     {
-        // Append package.path with where we will store our .lua/.fnl files
-        lua.DoString("package.path = package.path .. \";" + Application.persistentDataPath + "/scripting/lib/?/?.lua;" + Application.persistentDataPath + "/scripting/lib/?.lua\"");
+        // Fennel library
+        lua["__gamemodules_lua__fennel"] = fennelLibrary;
 
-        // Require fennel, fix path, and allow us to use require on .fnl files
-        // TODO safety via try/catch
+        // Lua scripts
+        for (int i = 0; i < luaScripts.Length; i++)
+        {
+            lua["__gamemodules_lua__" + luaScripts[i].name] = luaScripts[i];
+        }
+
+        // Fennel scripts
+        for (int i = 0; i < fennelScripts.Length; i++)
+        {
+            lua["__gamemodules_fnl__" + fennelScripts[i].name] = fennelScripts[i];
+        }
+    }
+
+    void LoadLua()
+    {
+        lua.DoString(luaSearcher.text);
+        for (int i = 0; i < luaScripts.Length; i++)
+        {
+            Debug.Log("Requiring lua package:" + luaScripts[i].name);
+            try
+            {
+                lua.DoString(luaScripts[i].name + " = require(\"" + luaScripts[i].name + "\")");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+    }
+
+    void LoadFennel()
+    {
         lua.DoString("fennel = require(\"fennel\")");
-        lua.DoString("table.insert(package.loaders or package.searchers, fennel.searcher)");
-        lua.DoString("fennel.path = fennel.path .. \";" + Application.persistentDataPath + "/scripting/lib/?/?.fnl;" + Application.persistentDataPath + "/scripting/lib/?.fnl\"");
-
-        // Load fennel scripts through unity placed files
-        // TODO safety via try/catch
+        lua.DoString(fennelSearcher.text);
         for (int i = 0; i < fennelScripts.Length; i++)
         {
             Debug.Log("Requiring fennel package:" + fennelScripts[i].name);
-            lua.DoString(fennelScripts[i].name + " = require(\"" + fennelScripts[i].name + "\")");
+            try
+            {
+                lua.DoString(fennelScripts[i].name + " = require(\"" + fennelScripts[i].name + "\")");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+            }
         }
     }
 
@@ -95,7 +118,8 @@ public class NLuaController : MonoBehaviour
                 // TODO
                 break;
         }
-    }
+    } 
+    #endregion
 
     void Eval(string chunk)
     {

@@ -43,7 +43,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed152d74b84748b4da72765bab12b277, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  luaSearcher: {fileID: -7152005794307193924, guid: 77730b4b0fb0a284b8b400bb88f38838, type: 3}
+  fennelSearcher: {fileID: -7152005794307193924, guid: 023931b69eafdd44e9876364d85c3661, type: 3}
   fennelLibrary: {fileID: -7152005794307193924, guid: d77cc95b48d7e5b4f9b8f3ecebfa802d, type: 3}
+  luaScripts: []
   fennelScripts:
   - {fileID: 2264786059868326190, guid: 1bc4173f817333a48a641fae2b1862b4, type: 3}
   defaultLanguage: 2

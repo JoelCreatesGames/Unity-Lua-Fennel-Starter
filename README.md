@@ -1,24 +1,27 @@
 # Unity-Lua-Fennel-Starter
 A Unity project to get started with Lua and Fennel
 
-### Why
+![Screenshot in game](Screenshots/InGameConsole.png)
+
+## What
+A Unity project with everything needed for Lua and Fennel. Uses [NLua](https://github.com/NLua/NLua)/[KeraLua](https://github.com/NLua/KeraLua) to interface with lua. 
+
+## Why
 I integrated Lua (and then Fennel) into my current project. This became a really powerful tool in my game and I knew I was going to want it for game jams. Makes sense to share what I learned more broadly, I hope this helps you.
 
 ### Why not a package?
-There are some assumptions/nuances that would make me feel bad if you used this as a package in it's current state. Read on for more information
+One day
 
-### How to use
+## How
+### Setup
 1) Clone/Download
 2) Open [UnityProject/](UnityProject/) in Unity
-3) Open the SampleScene in Unity
-4) Play the game and press backtick <code>`</code> to open the console (backtick or escape to close)
-5) Enter some fennel code (default)
-6) Change to lua with `(lang)` (or the default in `NLuaController`)
 
-![Screenshot in game](Screenshots/InGameConsole.png)
+### Usage
+The SampleScene is a good place to start; play the game and press backtick <code>`</code> to open the console (backtick or escape to close). Enter some some fennel code (default) and press enter to evaluate it. If you want to switch to Lua you can change the default in NLuaController or evaluate this fennel: <code>(lang)</code>
 
-### Nuance 1) It's not using the fennel repl
-yep, I didn't want to make that assumption for you. If you switch to lua it won't behave like one either, and this project focuses on working for both. You'll note I save to the global state an `_1` you can access the previous expressions results from. You can also set things to `_G` if you want to keep it between lines otherwise
+You can add your own fennel and lua code via modules that will be automatically required when you set them in the NLuaController inspector. The module name will be the filename (without extension).
 
-### Nuance 2) It copies the lua/fnl files to Application.persistentDataPath/scripting/lib
-yep, if you can figure out how to load lua/fennel modules from a string this can be removed, and instead load the modules from Unity TextAsset via NLua's CLR string exposure.
+You can interface with your Unity code via the [Bridge](UnityProject/Assets/UnityLuaFennelStarter/Scripts/Scripting/Bridge.cs) that NLuaController loads on Awake. Note the `Game:Log` and `Game:ConsoleDisplay` funcations can be called from within lua/fennel and they live within the `Game` c# class.
+
+The console here isn't a standard fennel repl in order for swapping to lua; if this interests you [read this](https://github.com/bakpakin/Fennel/wiki/Unity#repl). However it does save the return of the previous statement to the global `_1`.
