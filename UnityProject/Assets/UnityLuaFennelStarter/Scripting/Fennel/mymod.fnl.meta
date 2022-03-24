@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 5ae0a98dd47750344aea2dc1a133241c
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: be9f9c546bdff414aa656e6d1daa79cb, type: 3}
+  fennel: {instanceID: 0}

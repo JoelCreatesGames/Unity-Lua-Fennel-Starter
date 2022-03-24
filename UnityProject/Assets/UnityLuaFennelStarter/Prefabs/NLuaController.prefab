@@ -49,4 +49,5 @@ MonoBehaviour:
   luaScripts: []
   fennelScripts:
   - {fileID: 2264786059868326190, guid: 1bc4173f817333a48a641fae2b1862b4, type: 3}
+  - {fileID: 2264786059868326190, guid: 5ae0a98dd47750344aea2dc1a133241c, type: 3}
   defaultLanguage: 2
