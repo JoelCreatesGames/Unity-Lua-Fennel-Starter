@@ -88,6 +88,8 @@ public class NLuaController : MonoBehaviour
     void LoadFennel()
     {
         lua.DoString("fennel = require(\"fennel\")");
+        // this is needed if you plan to load fennel from the filesystem, example mods
+        // lua.DoString("table.insert(package.loaders or package.searchers, fennel.searcher)");
         lua.DoString(fennelSearcher.text);
         for (int i = 0; i < fennelScripts.Length; i++)
         {
